@@ -3,6 +3,7 @@
 import redis
 import time
 import numpy as np
+import gzip
 
 class Recorder():
     """Class to record redis activity during an observation. This activity
@@ -21,7 +22,9 @@ class Recorder():
         Args:
             file_name (str): Name of file to write.
         """
-        self.t_start = time.time() # relative start time of recording.
+        self.t_start = time.time() # Relative start time of recording.
+                                   # Note: not the time since first
+                                   # recorded entry.
         print('Recording; ^C to stop')
         while True:
             try:
@@ -71,6 +74,6 @@ class Recorder():
             file_name (str): Name of recording file.
             entry (str): Redis command entry to append to recording.
         """
-        with open(file_name, 'a') as f:
+        with gzip.open(file_name, 'a') as	 f:
             f.write(entry.replace('"', ''))
                           
