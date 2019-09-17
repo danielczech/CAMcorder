@@ -74,6 +74,6 @@ class Recorder():
             file_name (str): Name of recording file.
             entry (str): Redis command entry to append to recording.
         """
-        with gzip.open(file_name, 'a') as	 f:
+        with gzip.open(file_name, 'a') as f:
             f.write(entry.replace('"', ''))
                           

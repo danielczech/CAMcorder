@@ -12,15 +12,22 @@ def cli(args = sys.argv[0]):
         default = False, help = 'Record an observation\'s Redis messages.')
     parser.add_argument('-p', '--play', action = 'store_true', 
         default = False, help = 'Play an observation\'s Redis messages.')
-    parser.add_argument('-f', '--file', type = str, default = 'obs.yml', 
-        help = 'Filename to record or play back (yml).') 
+    parser.add_argument('-f', '--file', type = str, default = 'obs.txt', 
+        help = 'Filename to record or play back.') 
+    parser.add_argument('-n', '--no-timing', action = 'store_true', 
+        default = 'False', help = 'Do not use recorded original timings.')
+    parser.add_argument('-c', '--channels', type = str, default = 'all',
+        help = 'Comma separated list of channels to publish to from 
+        a recording, ignoring those not listed. By default all channels 
+        are published to.')
     if(len(sys.argv[1:])==0):
         parser.print_help()
         parser.exit()
     args = parser.parse_args()
-    main(record = args.record, play = args.play, filename = args.file)
+    main(record = args.record, play = args.play, filename = args.file, 
+        no-timing = args.no-timing, channels = args.channels)
 
-def main(record, play, filename):
+def main(record, play, filename, no-timing, channels):
     if(record & play):
         print('Ignoring record command.')
     elif(record):
