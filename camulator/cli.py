@@ -2,6 +2,8 @@
 
 import sys
 import argparse
+from camulator.recorder import Recorder 
+from camulator.player import Player
 
 def cli(args = sys.argv[0]):
     usage = "{} [options]".format(args)
@@ -24,19 +26,15 @@ def cli(args = sys.argv[0]):
         parser.print_help()
         parser.exit()
     args = parser.parse_args()
-    main(record = args.record, play = args.play, filename = args.file, 
+    main(record = args.record, play = args.play, file_name = args.file, 
         no-timing = args.no-timing, channels = args.channels)
 
-def main(record, play, filename, no-timing, channels):
+def main(record, play, file_name, no-timing, channels):
     if(record & play):
         print('Ignoring record command.')
     elif(record):
-        print('recording ' + filename)
+        rec = Recorder()
+        rec.record(file_name)
     elif(play):
-        print('playing ' + filename)
-
-
-
-
-
-
+        player = Player()
+        player.play(file_name, no-timing, channels)
