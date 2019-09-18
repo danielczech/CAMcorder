@@ -8,6 +8,12 @@ The `Recorder` class makes use of the Redis command [MONITOR](https://redis.io/c
 
 ### Usage:
 
+Record occurrences of the Redis commands `SET` and `PUBLISH` to a file:
+`camulator -r file_name.txt.gz -c 'set, publish'`
+
+Play back Redis commands stored in a file, publishing only to the channels `alerts` and `sensor_alerts`:
+`camulator -p file_name.txt.gz -ch 'alerts, sensor_alerts'`
+
 <pre>
 positional arguments:
   file_name             Filename to record or play back.

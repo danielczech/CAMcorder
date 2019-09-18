@@ -7,5 +7,8 @@ setup(
     packages = ['camulator'],
     entry_points = {
         'console_scripts': ['camulator = camulator.cli:cli']},
-    install_requires = [],
+    install_requires = [
+                       'numpy == 1.14.1'
+                       'redis = 2.10.6'
+                       ],
 ) 
