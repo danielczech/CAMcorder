@@ -7,19 +7,19 @@ from .player import Player
 
 def cli(args = sys.argv[0]):
     usage = "{} [options]".format(args)
-    description = 'Record or replay an observation\'s metadata Redis messages.'
+    description = 'Record or replay Redis commands.'
     parser = argparse.ArgumentParser(prog = 'camulator', usage = usage, 
         description = description) 
     parser.add_argument('-r', '--record', action = 'store_true', 
-        default = False, help = 'Record an observation\'s Redis messages.')
+        default = False, help = 'Record Redis commands.')
     parser.add_argument('-p', '--play', action = 'store_true', 
-        default = False, help = 'Play an observation\'s Redis messages.')
+        default = False, help = 'Play Redis commands.')
     parser.add_argument('file_name', type = str, default = 'obs.txt.gz',
         help = 'Filename to record or play back.')
     parser.add_argument('-n', '--notiming', action = 'store_true', 
-        default = False, help = 'Do not use recorded original timings.')
+        default = False, help = 'Do not use original recorded timings.')
     parser.add_argument('-c', '--commands', type = str, default = 'set, publish',
-        help = 'List of commands to record. Currently supports Redis commands with 2 arguments. Default = \'set, publish\'.')
+        help = 'List of commands to record. Defaults to \'set, publish\'. Currently supports Redis commands with 2 arguments.')
     parser.add_argument('-ch', '--channels', type = str, default = 'all',
         help = 'List of channels to publish to from a recording, ignoring those not listed. Default = \'all\'.')
     if(len(sys.argv[1:])==0):
