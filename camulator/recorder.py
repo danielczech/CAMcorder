@@ -1,5 +1,6 @@
 # Class to record all desired redis activity
 
+import os.path
 import redis
 import time
 import numpy as np
@@ -26,6 +27,10 @@ class Recorder():
                                    # Note: not the time since first
                                    # recorded entry.
         print('Recording; ^C to stop')
+        # Check if file to record already exists:
+        if(os.path.isfile(file_name)):
+            print('File {} exists; overwriting'.format(file_name)) # log in future
+            open(file_name, 'w').close()
         while True:
             try:
                 result = self.redis_server.execute_command('monitor')
