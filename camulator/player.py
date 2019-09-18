@@ -9,12 +9,22 @@ class Player(object):
     """ 
 
     def __init__(self, host = '127.0.0.1', port = '6379'):
+        """Initialise redis server.
+        """
         self.host = host
         self.port = port
         self.redis_server = redis.StrictRedis(host, port)
         
     def play(self, file_name, no_timing, channels):
-        """Play back redis commands recorded in a file. 
+        """Play back redis commands recorded in a file.
+                
+        Args:
+            file_name (str): Name and path of file to read.
+            no_timing (bool): If true, ignore recorded timing of commands.
+            channels (str): Channels to publish to (default = \'all\').
+
+        Returns:
+            None
         """
         entries = self.read_file(file_name)
         t0 = 0
@@ -42,7 +52,17 @@ class Player(object):
         print('Playback of {} completed.'.format(file_name)) # Log in future 
 
     def redis_command(self, cmd, arg0, arg1, channels):
-        """Execute redis command, accounting for specified channels etc.
+        """Execute Redis command, accounting for specified channels. Note that
+        currently, only Redis commands with two arguments are supported. 
+
+        Args:
+            cmd (str): Redis command to be executed.
+            arg0 (str): First argument of Redis command.
+            arg1 (str): Second argument of Redis command.
+            channels (str): List of channels that may be published to. 
+
+        Returns:
+            None
         """
         if('all' not in channels):
             if(('publish' in cmd.lower()) & (arg0 in channels)):
@@ -51,18 +71,34 @@ class Player(object):
             self.redis_server.execute_command(cmd, arg0, arg1)
 
     def read_entry(self, entry):
-        """Process entry from recording. 
+        """Process an entry from a recording. Note that currently, 
+        only Redis commands with two arguments are supported. 
+
+        Args:
+            entry (str): Entry from a recording file.
+
+        Returns:
+            t_entry (float): Timestamp (in seconds since start of recording).
+            cmd (str): Redis command to be executed.
+            arg0 (str): First argument of Redis command.
+            arg1 (str): Second argument of Redis command.
         """
         atts = entry.split(' ')
-        delay = float(atts[0])
+        t_entry = float(atts[0])
         cmd = atts[1]
         arg0 = atts[2]
         arg1 = atts[3].strip('\n')
-        return delay, cmd, arg0, arg1
+        return t_entry, cmd, arg0, arg1
 
     def read_file(self, file_name):
-        """Read entire file into memory first to avoid bottlenecks if
-        playing back redis commands quickly.
+        """Read entire recording file into memory first to avoid bottlenecks if
+        playing back Redis commands quickly.
+        
+        Args: 
+            file_name (str): Name and filepath of recording file.
+   
+        Returns:
+            entries (list): List of entries (str) containing Redis commands.
         """
         entries = []
         try:

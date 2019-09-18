@@ -9,9 +9,12 @@ import gzip
 class Recorder():
     """Class to record redis activity during an observation. This activity
     includes all published messages to any channel and all key-value pairs
-    written to the database. 
+    written to the database. Currently, only Redis commands which accept two
+    arguments are recorded. 
     """ 
     def __init__(self, host = '127.0.0.1', port = '6379'):
+        """Connect to Redis server.
+        """
         self.host = host
         self.port = port
         self.redis_server = redis.StrictRedis(host, port)
@@ -22,6 +25,7 @@ class Recorder():
 
         Args:
             file_name (str): Name of file to write.
+            commands (str): Commands to record (ignoring others).
         """
         commands = commands.replace(',', '').split(' ')
         print('Recording; ^C to stop')
@@ -81,5 +85,4 @@ class Recorder():
             entry (str): Redis command entry to append to recording.
         """
         with gzip.open(file_name, 'a') as f:
-            f.write(entry.replace('"', ''))
-                          
+            f.write(entry.replace('"', ''))               
