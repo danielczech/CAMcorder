@@ -27,7 +27,7 @@ class Recorder():
             file_name (str): Name of file to write.
             commands (str): Commands to record (ignoring others).
         """
-        commands = commands.replace(',', '').split(' ')
+        commands = commands.replace(',', '').lower().split(' ')
         print('Recording; ^C to stop')
         self.t_start = time.time() # Relative start time of recording.
                                    # Note: not the time since first
@@ -40,7 +40,7 @@ class Recorder():
             try:
                 result = self.redis_server.execute_command('monitor')
                 # Only interested in the commands 'set' and 'publish'
-                rec_entry = self.parse_result(result, commands)
+                rec_entry = self.parse_result(result.lower(), commands)
                 if rec_entry is not None:
                     self.write_entry(file_name, rec_entry)
             except KeyboardInterrupt:

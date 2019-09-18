@@ -6,6 +6,8 @@ In the case of the `meerkat-backend-interface`, the `camulator` can be used to s
 
 The `Recorder` class makes use of the Redis command [MONITOR](https://redis.io/commands/MONITOR), which impacts Redis throughput.  
 
+To inspect recorded files, the suggestion is to use [less](https://www.gnu.org/software/less/).
+
 ### Usage:
 
 Record occurrences of the Redis commands `SET` and `PUBLISH` to a file:
