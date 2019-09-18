@@ -17,13 +17,16 @@ class Player(object):
         """Play back redis commands recorded in a file. 
         """
         entries = self.read_file(file_name)
+        t0 = 0
         for entry in entries:
             try:
-                delay, cmd, arg0, arg1 = self.read_entry(entry)
+                t_entry, cmd, arg0, arg1 = self.read_entry(entry)
+                delay = t_entry - t0
+                t0 = t_entry
             except:
                 print('Could not read entry; skipping...') # Log in future
                 continue
-            if(no_timing): 
+            if(no_timing):
                 # If timing is not to be used - constant delay of 0.25 between
                 # commands.
                 time.sleep(0.25)     
@@ -33,10 +36,19 @@ class Player(object):
                 # will be processed at specific times.
                 time.sleep(delay)
             try:
-                self.redis_server.execute_command(cmd, arg0, arg1)
+                self.redis_command(cmd, arg0, arg1, channels)
             except:
                 print('Could not issue Redis command; skipping...')
         print('Playback of {} completed.'.format(file_name)) # Log in future 
+
+    def redis_command(self, cmd, arg0, arg1, channels):
+        """Execute redis command, accounting for specified channels etc.
+        """
+        if('all' not in channels):
+            if(('publish' in cmd.lower()) & (arg0 in channels)):
+                self.redis_server.execute_command(cmd, arg0, arg1)
+        else: 
+            self.redis_server.execute_command(cmd, arg0, arg1)
 
     def read_entry(self, entry):
         """Process entry from recording. 

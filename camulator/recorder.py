@@ -17,16 +17,17 @@ class Recorder():
         self.redis_server = redis.StrictRedis(host, port)
         self.t_start = None
 
-    def record(self, file_name):
+    def record(self, file_name, commands):
         """Listen to all desired Redis activity.
 
         Args:
             file_name (str): Name of file to write.
         """
+        commands = commands.replace(',', '').split(' ')
+        print('Recording; ^C to stop')
         self.t_start = time.time() # Relative start time of recording.
                                    # Note: not the time since first
                                    # recorded entry.
-        print('Recording; ^C to stop')
         # Check if file to record already exists:
         if(os.path.isfile(file_name)):
             print('File {} exists; overwriting'.format(file_name)) # log in future
@@ -35,7 +36,7 @@ class Recorder():
             try:
                 result = self.redis_server.execute_command('monitor')
                 # Only interested in the commands 'set' and 'publish'
-                rec_entry = self.parse_result(result, ['set', 'publish'])
+                rec_entry = self.parse_result(result, commands)
                 if rec_entry is not None:
                     self.write_entry(file_name, rec_entry)
             except KeyboardInterrupt:
