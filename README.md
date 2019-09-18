@@ -14,8 +14,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -r, --record          Record Redis commands.
-  -p, --play            Play Redis commands.
+  -r, --record          Record Redis commands to file.
+  -p, --play            Play Redis commands from file.
   -n, --notiming        Do not use original recorded timings.
   -c COMMANDS, --commands COMMANDS
                         List of commands to record. Defaults to 'set,
@@ -29,7 +29,7 @@ optional arguments:
 ### Installation
 
 [Redis](https://redis.io/topics/quickstart) should already be installed.
-You may wish to install it in a virtual environment. 
+You may wish to install the camulator in a virtual environment. 
  
 ```
 python setup.py install

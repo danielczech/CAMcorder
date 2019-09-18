@@ -11,9 +11,9 @@ def cli(args = sys.argv[0]):
     parser = argparse.ArgumentParser(prog = 'camulator', usage = usage, 
         description = description) 
     parser.add_argument('-r', '--record', action = 'store_true', 
-        default = False, help = 'Record Redis commands.')
+        default = False, help = 'Record Redis commands to file.')
     parser.add_argument('-p', '--play', action = 'store_true', 
-        default = False, help = 'Play Redis commands.')
+        default = False, help = 'Play Redis commands from file.')
     parser.add_argument('file_name', type = str, default = 'obs.txt.gz',
         help = 'Filename to record or play back.')
     parser.add_argument('-n', '--notiming', action = 'store_true', 
