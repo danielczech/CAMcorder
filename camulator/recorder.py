@@ -12,13 +12,22 @@ class Recorder():
     written to the database. Currently, only Redis commands which accept two
     arguments are recorded. 
     """ 
-    def __init__(self, host = '127.0.0.1', port = '6379'):
+    def __init__(self, host = '127.0.0.1', port = '6379', r_start = None, 
+        r_stop = None):
         """Connect to Redis server.
         """
         self.host = host
         self.port = port
         self.redis_server = redis.StrictRedis(host, port)
         self.t_start = None
+        self.r_start = r_start
+        self.r_stop = r_stop
+        self.recording = True
+        if(r_start is not None):
+            self.r_start = r_start.replace(',', '').lower().split(' ')
+            self.recording = False
+        if(r_stop is not None):
+            self.r_stop = r_stop.replace(',', '').lower().split(' ')
 
     def record(self, file_name, commands):
         """Listen to all desired Redis activity.
@@ -28,7 +37,10 @@ class Recorder():
             commands (str): Commands to record (ignoring others).
         """
         commands = commands.replace(',', '').lower().split(' ')
-        print('Recording; ^C to stop')
+        if(self.recording):
+            print('Recording; ^C to stop')
+        else:
+            print('Waiting for trigger; ^C to abort')
         self.t_start = time.time() # Relative start time of recording.
                                    # Note: not the time since first
                                    # recorded entry.
@@ -37,16 +49,24 @@ class Recorder():
             print('File {} exists; overwriting'.format(file_name)) # log in future
             open(file_name, 'w').close()
         while True:
-            try:
-                result = self.redis_server.execute_command('monitor')
-                # Only interested in the commands 'set' and 'publish'
-                rec_entry = self.parse_result(result.lower(), commands)
-                if rec_entry is not None:
-                    self.write_entry(file_name, rec_entry)
-            except KeyboardInterrupt:
-                print '\nRecording to {} stopped'.format(file_name)
-                return
-
+            result = self.redis_server.execute_command('monitor').lower()
+            if(self.recording):
+                try:
+                    # Only interested in the commands 'set' and 'publish'
+                    rec_entry = self.parse_result(result, commands)
+                    if(rec_entry is not None):
+                        if(self.check_for_trigger(result, self.t_start[0], 
+                            self.t_start[1])):
+                            print('\nRecording halted by keyword')
+                            continue # return to waiting state
+                        self.write_entry(file_name, rec_entry)
+                except KeyboardInterrupt:
+                    print('\nRecording to {} stopped'.format(file_name))
+                    return
+            else:
+                self.recording = self.check_for_trigger(result, 
+                    self.t_start[0], self.t_start[1])
+ 
     def parse_result(self, result, commands):
         """Decode Redis monitor results and return strings to 
         write to the current recording's file.
@@ -85,4 +105,12 @@ class Recorder():
             entry (str): Redis command entry to append to recording.
         """
         with gzip.open(file_name, 'a') as f:
-            f.write(entry.replace('"', ''))               
+            f.write(entry.replace('"', ''))      
+
+    def check_for_trigger(self, result, channel, message):
+        """Check for trigger message
+        """
+        if('"publish" "{}" "{}"'.format(channel, message) in result.lower()):
+            return True
+        else:
+            return False
