@@ -49,23 +49,28 @@ class Recorder():
             print('File {} exists; overwriting'.format(file_name)) # log in future
             open(file_name, 'w').close()
         while True:
-            result = self.redis_server.execute_command('monitor').lower()
-            if(self.recording):
-                try:
+            try:
+                result = self.redis_server.execute_command('monitor').lower()
+                rec_entry = self.parse_result(result, commands)
+                if(self.recording):
                     # Only interested in the commands 'set' and 'publish'
-                    rec_entry = self.parse_result(result, commands)
                     if(rec_entry is not None):
-                        if(self.check_for_trigger(result, self.t_start[0], 
-                            self.t_start[1])):
-                            print('\nRecording halted by keyword')
-                            continue # return to waiting state
+                        if(self.r_stop is not None):
+                            if(self.check_for_trigger(result, self.r_stop[0], 
+                                self.r_stop[1])):
+                                print('\nRecording halted by keyword')
+                                self.recording = False # Back to waiting state;
+                                                       # still record trigger.
                         self.write_entry(file_name, rec_entry)
-                except KeyboardInterrupt:
-                    print('\nRecording to {} stopped'.format(file_name))
-                    return
-            else:
-                self.recording = self.check_for_trigger(result, 
-                    self.t_start[0], self.t_start[1])
+                else:
+                    self.recording = self.check_for_trigger(result, 
+                        self.r_start[0], self.r_start[1])
+                    if(self.recording):
+                        print('\nRecording started by keyword')
+                        self.write_entry(file_name, rec_entry)
+            except KeyboardInterrupt:
+                print('\nRecording to {} stopped'.format(file_name))
+                return
  
     def parse_result(self, result, commands):
         """Decode Redis monitor results and return strings to 

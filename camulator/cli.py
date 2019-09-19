@@ -22,9 +22,9 @@ def cli(args = sys.argv[0]):
         help = 'List of commands to record. Defaults to \'set, publish\'. Currently supports Redis commands with 2 arguments.')
     parser.add_argument('-ch', '--channels', type = str, default = 'all',
         help = 'List of channels to publish to from a recording, ignoring those not listed. Default = \'all\'.')
-    parser.add_argument('-b', '--beginon', type = str, default = None,
+    parser.add_argument('-b', '--begin', type = str, default = None,
         help = 'Begin recording when a specific message is published to a specific channel. Enter in format \'channel, message\'')
-    parser.add_argument('-e', '--endon', type = str, default = None,
+    parser.add_argument('-e', '--end', type = str, default = None,
         help = 'End recording when a specific message is published to a specific channel. Enter in format \'channel, message\'')
     if(len(sys.argv[1:])==0):
         parser.print_help()
@@ -32,16 +32,16 @@ def cli(args = sys.argv[0]):
     args = parser.parse_args()
     main(rec = args.record, play = args.play, file_name = args.file_name, 
         no_timing = args.notiming, commands = args.commands, 
-        channels = args.channels, r_start = args.beginon, r_stop = args.endon)
+        channels = args.channels, r_start = args.begin, r_stop = args.end)
 
 def main(rec, play, file_name, no_timing, commands, channels, r_start, r_stop):
-    if(record & play):
+    if(rec & play):
         print('Ignoring record command.')
-        rec = Recorder(r_start = r_start, r_stop = r_stop)
-        rec.record(file_name, commands)
-    elif(record):
-        rec = Recorder(r_start = r_start, r_stop = r_stop)
-        rec.record(file_name, commands)
+        recorder = Recorder(r_start = r_start, r_stop = r_stop)
+        recorder.record(file_name, commands)
+    elif(rec):
+        recorder = Recorder(r_start = r_start, r_stop = r_stop)
+        recorder.record(file_name, commands)
     elif(play):
         player = Player()
         player.play(file_name, no_timing, channels)

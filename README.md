@@ -36,6 +36,12 @@ optional arguments:
   -ch CHANNELS, --channels CHANNELS
                         List of channels to publish to from a recording,
                         ignoring those not listed. Default = 'all'.
+  -b BEGIN, --begin BEGIN
+                        Begin recording when a specific message is published
+                        to a specific channel. Enter in format 'channel,
+                        message'
+  -e END, --end END     End recording when a specific message is published to
+                        a specific channel. Enter in format 'channel, message'
 </pre>
 
 ### Installation
