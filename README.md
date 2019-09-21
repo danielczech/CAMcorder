@@ -1,8 +1,8 @@
-# camulator
+# CAMcorder
 
 Record or replay Redis commands. 
 
-In the case of the [`meerkat-backend-interface`](https://github.com/danielczech/meerkat-backend-interface), the `camulator` can be used to simulate an observation's metadata by recording and replaying the sequence of Redis messages containing CAM information. For example, the `camulator` could take the place of the `katcp_server` and `katportal_server` when simulating an observation. 
+In the case of the [`meerkat-backend-interface`](https://github.com/danielczech/meerkat-backend-interface), the `CAMcorder` can be used to simulate an observation's metadata by recording and replaying the sequence of Redis messages containing CAM information. For example, the `CAMcorder` could take the place of the `katcp_server` and `katportal_server` when simulating an observation. 
 
 The `Recorder` class makes use of the Redis command [MONITOR](https://redis.io/commands/MONITOR), which impacts Redis throughput.  
 
@@ -12,12 +12,12 @@ To inspect recorded files, the suggestion is to use [less](https://www.gnu.org/s
 
 Record occurrences of the Redis commands `SET` and `PUBLISH` to a file:
 ```
-camulator -r file_name.txt.gz -c 'set, publish'
+camcorder -r file_name.txt.gz -c 'set, publish'
 ```
 
 Play back Redis commands stored in a file, publishing only to the channels `alerts` and `sensor_alerts`:
 ```
-camulator -p file_name.txt.gz -ch 'alerts, sensor_alerts'
+camcorder -p file_name.txt.gz -ch 'alerts, sensor_alerts'
 ```
 
 <pre>

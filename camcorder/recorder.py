@@ -91,10 +91,10 @@ class Recorder():
             if command in result:
                 t_offset = time.time() - self.t_start
                 try:
-                    result = result.split(command)[1]
-                    args = result.split(' ')
+                    result = result.partition(command)[2]
+                    args = result.partition(' ')
                     entry = '{} {} {} {}\n'.format(t_offset, command, 
-                            args[1], str(args[2:]))
+                            args[1], args[2])
                 except:
                     # In future will log
                     print('Unexpected result. Skipping...')

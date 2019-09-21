@@ -83,11 +83,13 @@ class Player(object):
             arg0 (str): First argument of Redis command.
             arg1 (str): Second argument of Redis command.
         """
-        atts = entry.split(' ')
+        atts = entry.partition(' ')
         t_entry = float(atts[0])
-        cmd = atts[1]
-        arg0 = atts[2]
-        arg1 = atts[3].strip('\n')
+        atts = atts[2].strip().partition(' ') 
+        cmd = atts[0]
+        atts = atts[2].strip().partition(' ')
+        arg0 = atts[0]
+        arg1 = atts[2].strip('\n')
         return t_entry, cmd, arg0, arg1
 
     def read_file(self, file_name):
