@@ -91,15 +91,15 @@ class Recorder():
             if command in result:
                 t_offset = time.time() - self.t_start
                 try:
-                    result = result.partition(command)[2]
+                    result = result.partition(command)[2].strip()
                     args = result.partition(' ')
-                    entry = '{} {} {} {}\n'.format(t_offset, command, 
-                            args[1], args[2])
+                    entry = '{} {} {} {}\n'.format(t_offset, command.strip('"'),
+                          args[0].strip('"'), args[2].strip('"'))
                 except:
                     # In future will log
                     print('Unexpected result. Skipping...')
                 # Expecting one command per result, so can return
-                return entry
+                return entry.decode('string_escape')
 
     def write_entry(self, file_name, entry):
         """Append an entry to the recording file; creates the recording
@@ -110,7 +110,7 @@ class Recorder():
             entry (str): Redis command entry to append to recording.
         """
         with gzip.open(file_name, 'a') as f:
-            f.write(entry.replace('"', ''))      
+            f.write(entry)      
 
     def check_for_trigger(self, result, channel, message):
         """Check for trigger message
